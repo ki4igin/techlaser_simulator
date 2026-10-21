@@ -1,0 +1,62 @@
+{
+    "version": "2.0.0",
+
+    "tasks": [
+        {
+            "label": "CMake: Configure",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S", "${workspaceFolder}",
+                "-B", "${workspaceFolder}/build",
+                "-DCMAKE_BUILD_TYPE=Debug"
+            ],
+            "problemMatcher": []
+        },
+
+        {
+            "label": "CMake: Build",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build",
+                "-j"
+            ],
+            "dependsOn": "CMake: Configure",
+            "problemMatcher": "$gcc",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+
+        {
+            "label": "Run: Techlaser Simulator",
+            "type": "shell",
+            "command": "${workspaceFolder}/bin/techlaser_simulator",
+            "args": [
+                "/dev/ttyS2"
+            ],
+            "dependsOn": "CMake: Build",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "clear": true
+            }
+        },
+
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-rf",
+                "${workspaceFolder}/build",
+                "${workspaceFolder}/bin"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
