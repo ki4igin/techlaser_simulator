@@ -82,7 +82,16 @@ public:
 		while (static_cast<int>(logs.size()) > 1000)
 			logs.pop_front();
 
+		logsDirty = true;
+	}
+
+	void refreshLogs() {
+		if (!active || !logsDirty) {
+			return;
+		}
+
 		drawLogs();
+		logsDirty = false;
 	}
 
 	void drawStatus(const std::string & port, double angle, double speed, int deviceStatus, int motorStatus, unsigned faults) {
@@ -153,6 +162,7 @@ private:
 	WINDOW * logWindow    = nullptr;
 
 	std::deque<std::string> logs;
+	bool logsDirty = false;
 
 	void createWindows() {
 		if (!active) return;
@@ -372,7 +382,7 @@ bool writeAll(int fd, const std::string & data) {
 }
 
 bool sendPacket(int fd, const std::string & packet) {
-	::usleep(1000); // Временно: 5 мс для проверки смены направления.
+	::usleep(500); // Временно: 500 мкс для проверки смены направления.
 	if (terminalUI) terminalUI->log("TX: " + packet);
 
 	return writeAll(fd, packet);
@@ -423,6 +433,7 @@ public:
 			if (now - lastDisplay >= std::chrono::milliseconds(100)) {
 				if (terminalUI) {
 					terminalUI->drawStatus(port, angle, speed, deviceStatus, motorStatus, motorFaults);
+					terminalUI->refreshLogs();
 				}
 				lastDisplay = now;
 			}
